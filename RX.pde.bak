@@ -94,7 +94,7 @@ ISR(PCINT2_vect) { //this ISR is common to every receiver channel, it is call ev
       } else edgeTime[3] = cTime;
   #endif
   #if defined(FAILSAFE)
-    if (mask & 1<<THROTTLEPIN/*added JDH*/&& rf == true/*added JDH*/) {    // If pulse present on THROTTLE pin (independent from ardu version), clear FailSafe counter  - added by MIS
+    if (mask & 1<<THROTTLEPIN) {    // If pulse present on THROTTLE pin (independent from ardu version), clear FailSafe counter  - added by MIS
       if(failsafeCnt > 20) failsafeCnt -= 20; else failsafeCnt = 0; }
   #endif
 }

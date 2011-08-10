@@ -1,5 +1,4 @@
 /*
-JDH Mods 2011-08-10
 MultiWiiCopter by Alexandre Dubus
 www.multiwii.com
 August  2011     V1.8
@@ -8,10 +7,9 @@ August  2011     V1.8
  the Free Software Foundation, either version 3 of the License, or
  any later version. see <http://www.gnu.org/licenses/>
 */
-#include "WProgram.h"
+
 #include "config.h"
 #include "def.h"
-#include "LEDs.h"
 #define   VERSION  18
 
 /*********** RC alias *****************/
@@ -35,14 +33,6 @@ August  2011     V1.8
 #define BOXCAMSTAB  3
 #define BOXCAMTRIG  4
 #define BOXARM      5
-
-//added JDH
-#define RF_DETPIN 4  // RF detection LED from Rx this is either 1.6v when there is RF or 0v
-HardwareSerial* SERIAL_PORT;
-
-#define LED_PINS {22, 23, 24, 25}
-LEDs_FlashAll LEDs;
-//added JDH
 
 
 static uint32_t currentTime = 0;
@@ -94,8 +84,8 @@ static uint8_t telemetry_auto = 0;
 // ******************
 // rc functions
 // ******************
-#define MINCHECK 1200
-#define MAXCHECK 1800
+#define MINCHECK 1100
+#define MAXCHECK 1900
 
 volatile int16_t failsafeCnt = 0;
 
@@ -163,25 +153,6 @@ void annexCode() { //this code is excetuted at each loop and won't interfere wit
   else if (rcData[THROTTLE]<2000) prop2 = 100 - (rcData[THROTTLE]-1500)/5 * dynThrPID/100;
   else                            prop2 = 100 - dynThrPID;
 
-//added JDH  
-//*********************************************************************************
-    rfdetect = analogRead(RF_DETPIN);
-  if (rfdetect < 200)
-   {
-     rf = false;
-     
-   }else
-   {
-     rf = true;
-   }
-   
-  batRaw = analogRead(V_BATPIN); //my own version JDH ******************************
-  batVoltage = (batRaw*BATTERY_MONITOR_SCALE_FACTOR); //my own version JDH *********
-
-//*********************************************************************************
-
-  
-
   for(axis=0;axis<2;axis++) {
     //PITCH & ROLL dynamic PID adjustemnt, depending on stick deviation
     prop1 = 100-min(abs(rcData[axis]-1500)/5,100)*rollPitchRate/100;
@@ -239,20 +210,6 @@ void annexCode() { //this code is excetuted at each loop and won't interfere wit
     }
   #endif
 
- //added JDH *************************************************************************************************
-   if(!(calibratingA > 0 || calibratingG > 0))
-   {
-   if (rf == false) LEDs.flashFaster();
-    else if (batVoltage < BAT_CRITICAL && rf == true) LEDs.flashFast();
-    else if (batVoltage < BAT_WARNING && rf == true) LEDs.flashSlow();
-    else {
-      LEDs.alwaysOn();
-     }
-   }
-//added JDH *************************************************************************************************
-  
-  
-
   if ( ( (calibratingA>0 && (ACC || nunchuk) ) || (calibratingG>0) ) ) {  // Calibration phasis
     LEDPIN_SWITCH
   } else {
@@ -302,27 +259,7 @@ void annexCode() { //this code is excetuted at each loop and won't interfere wit
 
 
 void setup() {
-//added JDH *************************************************************************************************
-  pinMode(WIRELESS_TELEMETRY_J_PIN, INPUT);
-  digitalWrite(WIRELESS_TELEMETRY_J_PIN, HIGH); //turn on pullup resistor
-
-  if(digitalRead(WIRELESS_TELEMETRY_J_PIN) == LOW)  // jumper on
-  {
-    SERIAL_PORT = &Serial3; 
-  }else
-  {
-    SERIAL_PORT = &Serial;
-  }  
-
-  //Compiler wont let me put {1, 2, 3} in as a param so copy it to a local array and work out how many led's we have at runtime
-  int arr_leds[] = LED_PINS;
-  LEDs.initialize(arr_leds, sizeof(arr_leds) / sizeof(int));
-  //LEDs.flashFast();
-  LEDs.alwaysOn();
-//added JDH *************************************************************************************************
-  
   Serial.begin(SERIAL_COM_SPEED);
-  Serial.print("Hello");
   LEDPIN_PINMODE
   POWERPIN_PINMODE
   BUZZERPIN_PINMODE
@@ -346,7 +283,6 @@ void setup() {
 
 // ******** Main Loop *********
 void loop () {
-  LEDs.run(currentTime);//added JDH
   static uint8_t rcDelayCommand; // this indicates the number of time (multiple of RC measurement at 50Hz) the sticks must be maintained to run or switch off motors
   uint8_t axis,i;
   int16_t error,errorAngle;
@@ -384,9 +320,9 @@ void loop () {
       errorAngleI[ROLL] = 0; errorAngleI[PITCH] = 0;
       rcDelayCommand++;
       if (rcData[YAW] < MINCHECK && rcData[PITCH] < MINCHECK && armed == 0) {
-        if (rcDelayCommand == rcDelayValue) calibratingG=400;
+        if (rcDelayCommand == 20) calibratingG=400;
       } else if (rcData[YAW] > MAXCHECK && rcData[PITCH] > MAXCHECK && armed == 0) {
-        if (rcDelayCommand == rcDelayValue) {
+        if (rcDelayCommand == 20) {
           servo[0] = 1500; //we center the yaw gyro in conf mode
           writeServos();
           #if defined(LCD_CONF)
@@ -399,12 +335,12 @@ void loop () {
         else if (armed) armed = 0;
         rcDelayCommand = 0;
       } else if ( (rcData[YAW] < MINCHECK || rcData[ROLL] < MINCHECK)  && armed == 1) {
-        if (rcDelayCommand == rcDelayValue) armed = 0; // rcDelayCommand = 20 => 20x20ms = 0.4s = time to wait for a specific RC command to be acknowledged
+        if (rcDelayCommand == 20) armed = 0; // rcDelayCommand = 20 => 20x20ms = 0.4s = time to wait for a specific RC command to be acknowledged
       } else if ( (rcData[YAW] > MAXCHECK || rcData[ROLL] > MAXCHECK) && rcData[PITCH] < MAXCHECK && armed == 0 && calibratingG == 0 && calibratedACC == 1) {
-        if (rcDelayCommand == rcDelayValue) armed = 1;
+        if (rcDelayCommand == 20) armed = 1;
      #ifdef LCD_TELEMETRY_AUTO
       } else if (rcData[ROLL] < MINCHECK && rcData[PITCH] > MAXCHECK && armed == 0) {
-        if (rcDelayCommand == rcDelayValue) {
+        if (rcDelayCommand == 20) {
            if (telemetry_auto) {
               telemetry_auto = 0;
               telemetry = 0;
@@ -416,7 +352,7 @@ void loop () {
         rcDelayCommand = 0;
     } else if (rcData[THROTTLE] > MAXCHECK && armed == 0) {
       if (rcData[YAW] < MINCHECK && rcData[PITCH] < MINCHECK) {
-        if (rcDelayCommand == rcDelayValue) calibratingA=400;
+        if (rcDelayCommand == 20) calibratingA=400;
         rcDelayCommand++;
       } else if (rcData[PITCH] > MAXCHECK) {
          accTrim[PITCH]++;writeParams();
@@ -489,7 +425,6 @@ void loop () {
       if (dif >= + 180) dif -= 360;
       if ( (abs(angle[ROLL])<200) && (abs(angle[PITCH])<200) ) //20 deg
         rcCommand[YAW] -= dif*P8[PIDMAG]/30; 
-       // Serial.println(rcCommand[YAW]);
     } else magHold = heading;
   }
 

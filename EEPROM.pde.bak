@@ -43,7 +43,6 @@ void readEEPROM() {
 }
 
 void writeParams() {
-  //Serial.println("writing");
   uint8_t i, _address = 0;
   for(i=0; i<EEBLOCK_SIZE; i++) {
     eeprom_write_block(eep_entry[i].var, (void*)(_address), eep_entry[i].size); _address += eep_entry[i].size;
