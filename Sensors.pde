@@ -886,6 +886,21 @@ uint8_t WMP_getRawADC() {
   } 
 
   // Wii Motion Plus Data
+    if ( (rawADC[5]&0x02) == 0x02 && (rawADC[5]&0x01) == 0 ) {// motion plus data
+    GYRO_ORIENTATION( - ( ((rawADC[5]>>2)<<8) + rawADC[2] ) , //range: +/- 8192
+                      - ( ((rawADC[4]>>2)<<8) + rawADC[1] ) ,
+                      - ( ((rawADC[3]>>2)<<8) + rawADC[0] ) );
+    GYRO_Common();
+                        gyroADC[ROLL] = (rawADC[3]&0x01)     ? gyroADC[ROLL]/5  : gyroADC[ROLL]; 
+                        gyroADC[PITCH] = (rawADC[4]&0x02)>>1  ? gyroADC[PITCH]/5 : gyroADC[PITCH]; 
+                        gyroADC[YAW] = (rawADC[3]&0x02)>>1  ? gyroADC[YAW]/5   : gyroADC[YAW];                       
+    return 1;
+  } else if ( (rawADC[5]&0x02) == 0 && (rawADC[5]&0x01) == 0) { //nunchuk data
+    ACC_ORIENTATION(  ( (rawADC[3]<<2)        + ((rawADC[5]>>4)&0x2) ) ,
+                    - ( (rawADC[2]<<2)        + ((rawADC[5]>>3)&0x2) ) ,
+                      ( ((rawADC[4]&0xFE)<<2) + ((rawADC[5]>>5)&0x6) ) );
+  
+  /*
   if ( (rawADC[5]&0x03) == 0x02 ) {
     // Assemble 14bit data 
     gyroADC[ROLL]  = - ( ((rawADC[5]>>2)<<8) | rawADC[2] ); //range: +/- 8192
@@ -900,7 +915,7 @@ uint8_t WMP_getRawADC() {
   } else if ( (rawADC[5]&0x03) == 0x00 ) { // Nunchuk Data
     ACC_ORIENTATION(  ( (rawADC[3]<<2)      | ((rawADC[5]>>4)&0x02) ) ,
                     - ( (rawADC[2]<<2)      | ((rawADC[5]>>3)&0x02) ) ,
-                      ( ((rawADC[4]>>1)<<3) | ((rawADC[5]>>5)&0x06) ) );
+                      ( ((rawADC[4]>>1)<<3) | ((rawADC[5]>>5)&0x06) ) );*/
     ACC_Common();
     return 0;
   } else
