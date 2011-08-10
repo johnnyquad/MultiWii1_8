@@ -525,7 +525,7 @@ void loop () {
   //**** PITCH & ROLL & YAW PID ****    
   for(axis=0;axis<3;axis++) {
     if (accMode == 1 && axis<2 ) { //LEVEL MODE
-      errorAngle = constrain(2*rcCommand[axis],-700,+700) - angle[axis] + accTrim[axis]; //16 bits is ok here
+      errorAngle = constrain(2*/* Remove the 2* to lower agrassive response in level mode */rcCommand[axis],-700,+700) - angle[axis] + accTrim[axis]; //16 bits is ok here
       #ifdef LEVEL_PDF
         PTerm      = -(int32_t)angle[axis]*P8[PIDLEVEL]/100 ;
       #else  
