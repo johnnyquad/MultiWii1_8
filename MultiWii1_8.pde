@@ -489,7 +489,7 @@ void loop () {
       if (dif >= + 180) dif -= 360;
       if ( (abs(angle[ROLL])<200) && (abs(angle[PITCH])<200) ) //20 deg
         rcCommand[YAW] -= dif*P8[PIDMAG]/30; 
-       // Serial.println(rcCommand[YAW]);
+       //Serial.println(rcCommand[YAW]);
     } else magHold = heading;
   }
 
