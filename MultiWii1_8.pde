@@ -322,6 +322,7 @@ void setup() {
 //added JDH *************************************************************************************************
   
   Serial.begin(SERIAL_COM_SPEED);
+  Serial2.begin(SERIAL_COM_SPEED);
   Serial.print("Hello");
   LEDPIN_PINMODE
   POWERPIN_PINMODE
@@ -584,3 +585,4 @@ void loop () {
     logMotorsPower();
   #endif 
 }
+

@@ -32,10 +32,10 @@ void serialCom() {
   uint8_t i;
 
   uint16_t intPowerMeterSum, intPowerTrigger1;   
-
-  if ((!tx_busy) && Serial.available()) {
-    switch (Serial.read()) {
-    #ifdef LCD_TELEMETRY
+  if(Serial2.available()) {
+    switch(Serial2.read())
+    {
+      #ifdef LCD_TELEMETRY
     case 'A': // button A press
       if (telemetry=='A') telemetry = 0; else { telemetry = 'A'; LCDprint(12); /* clear screen */ }
       break;    
@@ -53,7 +53,30 @@ void serialCom() {
     case 'c': // button C release
     case 'd': // button D release
       break;      
-    #endif
+    #endif       
+    }
+  }
+  if ((!tx_busy) && Serial.available()) {
+    switch (Serial.read()) {
+    /*#ifdef LCD_TELEMETRY
+    case 'A': // button A press
+      if (telemetry=='A') telemetry = 0; else { telemetry = 'A'; LCDprint(12);  }
+      break;    
+    case 'B': // button B press
+      if (telemetry=='B') telemetry = 0; else { telemetry = 'B'; LCDprint(12); / }
+      break;    
+    case 'C': // button C press
+      if (telemetry=='C') telemetry = 0; else { telemetry = 'C'; LCDprint(12);  }
+      break;    
+    case 'D': // button D press
+      if (telemetry=='D') telemetry = 0; else { telemetry = 'D'; LCDprint(12);  }
+      break;
+    case 'a': // button A release
+    case 'b': // button B release
+    case 'c': // button C release
+    case 'd': // button D release
+      break;      
+    #endif */
     case 'M': // Multiwii @ arduino to GUI all data
       point=0;
       serialize8('M');
