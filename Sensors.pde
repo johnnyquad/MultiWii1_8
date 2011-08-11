@@ -905,7 +905,7 @@ uint8_t WMP_getRawADC() {
     // Assemble 14bit data 
     GYRO_ORIENTATION( - ( ((rawADC[5]>>2)<<8) | rawADC[2] ), //range: +/- 8192
                      - ( ((rawADC[4]>>2)<<8) | rawADC[1] ),
-                     - ( ((rawADC[3]>>2)<<8) | rawADC[0] ) ):
+                     - ( ((rawADC[3]>>2)<<8) | rawADC[0] ) );
     GYRO_Common();
     // Check if slow bit is set and normalize to fast mode range
     gyroADC[ROLL]  = (rawADC[3]&0x01)     ? gyroADC[ROLL]/5  : gyroADC[ROLL];  //the ratio 1/5 is not exactly the IDG600 or ISZ650 specification 
