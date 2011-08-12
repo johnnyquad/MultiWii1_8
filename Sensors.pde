@@ -193,8 +193,7 @@ void GYRO_Common() {
       }
     }
     calibratingG--;
-    // JDH *************************************************
-    LEDs.alwaysOn();
+    
   }
   for (axis = 0; axis < 3; axis++) {
     gyroADC[axis]  -= gyroZero[axis];
@@ -232,8 +231,7 @@ void ACC_Common() {
       writeParams(); // write accZero in EEPROM
     }
     calibratingA--;
-    // JDH *************************************************
-    LEDs.alwaysOn();
+    
   }
   accADC[ROLL]  -=  accZero[ROLL] ;
   accADC[PITCH] -=  accZero[PITCH];
