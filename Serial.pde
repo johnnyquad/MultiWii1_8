@@ -172,11 +172,11 @@ void serialCom() {
       Serial.print(" ");
       Serial.print(accZero[ROLL]);
       Serial.print(" ");
-      Serial.print(softTrimROLL);
-      Serial.print(" ");
       Serial.print(accZero[PITCH]);
       Serial.print(" ");
-      Serial.println(softTrimPITCH);
+      Serial.print(calibratingA);
+      Serial.print(" ");
+      Serial.println(calibratingG);
       break;
 //added JDH      
     }
