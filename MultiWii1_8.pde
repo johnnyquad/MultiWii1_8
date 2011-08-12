@@ -240,7 +240,7 @@ void annexCode() { //this code is excetuted at each loop and won't interfere wit
   #endif
 
  //added JDH *************************************************************************************************
-   if(!(calibratingA > 0 || !calibratingG > 0))
+   if(!(calibratingA > 0 || calibratingG > 0))
    {
    if (rf == false) LEDs.flashFaster();
     else if (batVoltage < BAT_CRITICAL && rf == true) LEDs.flashFast();
