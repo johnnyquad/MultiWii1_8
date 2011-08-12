@@ -177,6 +177,8 @@ void GYRO_Common() {
   uint8_t axis;
   
   if (calibratingG>0) {
+    // JDH ************************************************
+    LEDs.flashFast();
     for (axis = 0; axis < 3; axis++) {
       // Reset g[axis] at start of calibration
       if (calibratingG == 400) g[axis]=0;
@@ -191,6 +193,8 @@ void GYRO_Common() {
       }
     }
     calibratingG--;
+    // JDH *************************************************
+    LEDs.alwaysOn();
   }
   for (axis = 0; axis < 3; axis++) {
     gyroADC[axis]  -= gyroZero[axis];
@@ -207,6 +211,8 @@ void ACC_Common() {
   static int32_t a[3];
   
   if (calibratingA>0) {
+    // JDH ************************************************
+    LEDs.flashFast();
     for (uint8_t axis = 0; axis < 3; axis++) {
       // Reset a[axis] at start of calibration
       if (calibratingA == 400) a[axis]=0;
@@ -226,6 +232,8 @@ void ACC_Common() {
       writeParams(); // write accZero in EEPROM
     }
     calibratingA--;
+    // JDH *************************************************
+    LEDs.alwaysOn();
   }
   accADC[ROLL]  -=  accZero[ROLL] ;
   accADC[PITCH] -=  accZero[PITCH];

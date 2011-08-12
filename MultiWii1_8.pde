@@ -240,7 +240,7 @@ void annexCode() { //this code is excetuted at each loop and won't interfere wit
   #endif
 
  //added JDH *************************************************************************************************
-   if(!(calibratingA > 0 || calibratingG > 0))
+   if(!(calibratingA > 0 || !calibratingG > 0))
    {
    if (rf == false) LEDs.flashFaster();
     else if (batVoltage < BAT_CRITICAL && rf == true) LEDs.flashFast();
@@ -526,7 +526,7 @@ void loop () {
   //**** PITCH & ROLL & YAW PID ****    
   for(axis=0;axis<3;axis++) {
     if (accMode == 1 && axis<2 ) { //LEVEL MODE
-      errorAngle = constrain(2*/* Remove the 2* to lower agrassive response in level mode */rcCommand[axis],-700,+700) - angle[axis] + accTrim[axis]; //16 bits is ok here
+      errorAngle = constrain(/* 2* Remove the 2* to lower agrassive response in level mode JDH */rcCommand[axis],-700,+700) - angle[axis] + accTrim[axis]; //16 bits is ok here
       #ifdef LEVEL_PDF
         PTerm      = -(int32_t)angle[axis]*P8[PIDLEVEL]/100 ;
       #else  
